@@ -1,4 +1,4 @@
-local usingPrefix = false -- 如果连接不上github，可以把这项改成true，使用国内镜像下载
+local usingPrefix = true -- 如果连接不上github，可以把这项改成true，使用国内镜像下载
 
 local shell = require("shell")
 local filesystem = require("filesystem")
@@ -39,6 +39,10 @@ local scripts = {
     "agent/init.lua",
     "agent/selecter.lua",
     "agent/Session.lua",
+}
+
+local lnks = {
+    ["/home/ai.lua"] = install_path .. "agent/init.lua",
 }
 
 local prefix = "https://github.xutongxin.me/"
@@ -88,7 +92,9 @@ local function main()
         writeFile(file_path, content)
     end
     -- Lnk
-    writeFile("/home/ai.lua", "loadfile(\"" .. install_path .. "agent/init.lua\")(...)")
+    for lnk, target in pairs(lnks) do
+        writeFile(lnk, "loadfile(\"" .. target .. "\")(...)")
+    end
 end
 
 local suc, test = pcall(download, "http://www.msftconnecttest.com/connecttest.txt")

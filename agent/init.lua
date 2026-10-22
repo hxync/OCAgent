@@ -1,4 +1,3 @@
--- OCAgent $[[VERSION]], by hxync
 do
     local path = "$[[INSTALL_PATH]]"
     local package = require("package")
@@ -77,6 +76,10 @@ if args[1] then
         end
     end
 end
+
+print("\27[36mOCAgent $[[VERSION]]\27[0m by hxync")
+print("Ctrl+C以中断模型输出，再次Ctrl+C以退出程序")
+
 if not session then
     local fs = require("filesystem")
     local sessions_path = os.getenv("AGENT") .. "/sessions"
