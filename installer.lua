@@ -72,7 +72,7 @@ local function main()
     -- Repo
     local version = download(string.format("%s%s/VERSION", repo, branch))
     for i = 1, #paths do
-        local dir = install_path .. paths[i]
+        local dir = paths[i]
         if not filesystem.exists(dir) then
             filesystem.makeDirectory(dir)
         end
