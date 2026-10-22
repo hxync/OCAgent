@@ -1,0 +1,54 @@
+OpenOS shell 说明
+
+一、环境与替代方案
+系统为 OpenOS，Lua 5.3。PATH = /bin:/home/bin:. ，不存在 /usr/bin。
+每条“命令”都是 /bin 下的 Lua 程序，没有 Unix 外部工具：没有 wc、awk、sed、
+sort、uniq、tail、xargs、env、test。文本处理、统计、计算直接用 lua_shell 在
+Lua 里完成，不要通过拼 shell 管道。返回大表时先在 Lua 里截断。
+
+二、语法
+支持：
+  顺序执行 ;
+  短路 && 与 ||
+  管道 |
+  重定向 <  >  >>
+  变量 $VAR ${VAR}
+  退出码 $?
+  反引号 `cmd`
+  单引号 ' '
+  双引号 " "
+  相邻引号拼接
+  通配 * 与 ?
+不支持：
+  $() 与 $((1+2))，前者不展开，后者原样输出
+  {a,b} 花括号展开
+  ~ 主目录展开
+  # 注释
+  后台 & 与作业控制
+  内建 exit test export，以及 set -e 之类语义
+  环境变量改动不跨调用保留
+
+三、别名（位于 /home/.shrc）
+l=ls -lhp  dir=ls  df=df -h  del=rm  copy=cp  move/rename=mv  md=mkdir  help=man
+cls=clear  view=edit -r  more=less --noback  ..=cd ..   可把 .. 当命令名直接写
+grep 别名附带 --color；输出混入颜色转义影响解析时，先 unalias grep 或调用 /bin/grep.lua
+
+四、参数写法注意
+命令由 Lua 实现，短选项支持不一致：
+  head 不接受 -40 这类写法，用 head --lines=10
+  不确定选项先 man <命令>；man 对未知主题返回非零
+  ls -l 输出是 f-rw 大小 日期 路径 的紧凑格式，不要按 Unix 列位解析
+
+五、可用命令（/bin）
+address alias cat cd clear components cp date dmesg df du echo edit find flash
+free grep head hostname install label less list ln ls lshw lua man mkdir mktmp
+mount mv pastebin primary ps pwd rc reboot redstone resolution rm rmdir set sh
+shutdown sleep source time touch tree umount unalias unset uptime useradd userdel
+wget which yes
+上传/下载用 pastebin 与 wget；硬件信息用 components 与 lshw。
+
+六、其它
+在一条命令里 cd 只影响该条命令，不会延续到下一次调用。
+需要 TTY 或等待输入的程序会一直阻塞直到超时：edit、less、lua（REPL）、sh、install。
+退出码 127 表示命令不存在或解析失败，1 通常是程序自身返回失败（如 man --help）。
+/tmp 挂在 tmpfs：用程序重启会保留其中内容，游戏内关机再开机（断电式重启）会清空 /tmp。
