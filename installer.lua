@@ -1,6 +1,5 @@
 local usingPrefix = true -- 如果连接不上github，可以把这项改成true，使用国内镜像下载
 
-local shell = require("shell")
 local filesystem = require("filesystem")
 local internet = require("internet")
 
@@ -66,24 +65,25 @@ end
 local function main()
     -- Lib
     if not filesystem.exists("/lib/JSON.lua") then
+        print("Downloading JSON.lua")
         local content = download("https://regex.info/code/JSON.lua")
         writeFile("/lib/JSON.lua", content)
     end
     -- Repo
     local version = download(string.format("%s%s/VERSION", repo, branch))
     for i = 1, #paths do
-        local dir = shell.getWorkingDirectory() .. "/" .. paths[i]
+        local dir = install_path .. paths[i]
         if not filesystem.exists(dir) then
             filesystem.makeDirectory(dir)
         end
     end
     for i = 1, #scripts do
-        local file_path = shell.getWorkingDirectory() .. "/" .. scripts[i]
+        local file_path = install_path .. scripts[i]
         if filesystem.exists(file_path) then
             filesystem.remove(file_path)
         end
         local url = string.format("%s%s/%s", repo, branch, scripts[i])
-        print("Downloading /"..scripts[i])
+        print("Downloading "..scripts[i])
         local content = download(url)
         content = content:gsub("$[[INSTALL_PATH]]", install_path)
         content = content:gsub("$[[VERSION]]", version)
